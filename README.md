@@ -108,3 +108,81 @@ Em qualquer metodo do vue, para acessar um valor do data(Vue model) basta utiliz
 		}
 	})
 ```
+
+## Attribute and Class Binding
+
+Para mapear atributos basta usar a diretiva 'v-bind' seguido de qual atributo vc deseja alterar. Exemplo 'v-bind:title' sendo que esse formato pode ser substituido para :title=, que o valor atribuido está no vue model.
+
+Ex: 
+```html
+<button v-bind:title="title">Button</button>
+```
+
+```js
+	var app = new Vue({
+		el:'#root',
+		data: {
+			 title: 'Title via Javascript'
+		}
+	})
+```
+
+É possivel condicionar valores em atributos, tendo como exemplos classes que podem ser atribuidas dependendo de uma ação.
+Podemos utilizar por exemplo: :class= "{ 'is-loading':isLoading }" sendo isLoading atributo do Vue que se pode alterar via um metodo do Vue. Que podemos chamar via um evento como @click.
+
+
+```html
+<button :class= "{ 'is-loading':isLoading }" @click="toggleClass">Button</button>
+```
+
+```js
+var app = new Vue({
+	el:'#root',
+	data: {
+		 isLoading: false
+	},
+	methods: {
+		toggleClass(){
+			this.isLoading = true;
+		}
+	}
+})
+```
+
+## The Need for Computed Properties
+
+No objeto do vue, podemos inserir um atributo computed:, todos atributos que inserirmos la, serão enxergados como atributos de vue model. Porem eles serão atributos computados a partir de atributos ja inseridos no vue model.
+
+Neste exemplo, o array tasks é utilizado como origem para se criar o atributo computado incompleteTasks().
+
+```js
+var app = new Vue({
+	el:'#root',
+	data: {
+		 tasks: [
+		 	{ description: 'Go to school', completed: true },
+		 	{ description: 'Try to be succeded', completed: false },
+		 	{ description: 'Don\'t follow leaders ' , completed: true },
+		 	{ description: 'Watch the parking meters', completed: false },
+		 	{ description: 'Look out', completed: false },
+		 	{ description: 'Stay away!', completed: true },
+		 	{ description: 'Get sick', completed: true },
+		 	{ description: 'Get jail', completed: false }
+		 ]
+	},
+	computed: {
+		incompleteTask(){
+			return this.tasks.filter( (task) => task.completed )
+		}
+	}
+})
+```
+
+Assim ele pode ser utilizado como nesse exemplo
+
+```html
+<h1>Incompleted Tasks</h1>
+<ul>
+	<li v-for="task in incompleteTask" v-text="task.description"></li>
+</ul>
+```
