@@ -186,3 +186,63 @@ Assim ele pode ser utilizado como nesse exemplo
 	<li v-for="task in incompleteTask" v-text="task.description"></li>
 </ul>
 ```
+
+## Components 101
+
+Para criar componentes, deve ser definir um Vue.component()
+
+Em que no atributo template define o html do componente quando ele for instanciado.
+
+```js
+	Vue.component('task',{
+		template: '<li><slot></slot></li>'
+	});
+```
+
+```html
+	<ul>
+		<task> And all God's angels beware </task>
+		<task> And all you judges beware </task>
+		<task> Sons of chance, take good care </task>
+		<task> For all the people not there </task>
+		<task> I'm not afraid anymore </task>
+
+	</ul>
+```
+
+
+## Components Within Components
+
+Ao se definir um template de um componente, não se pode retornar multiplos elementos, sendo assim, pode-se colocar uma div para agrupar multiplas tags.
+
+Pode se incluir componentes dentro de componentes. Usando a tag criada no template de um componente quando se esta criando o template de outro componente.
+Ex:
+
+```js
+	Vue.component('task-list',{
+		template: ` <div>
+						<task v-for="task in tasks" v-text="task.description"> </task>
+					</div>
+		`
+	,
+	data() {
+		return{
+			tasks: [
+			 	{ description: 'Go to school', completed: true },
+			 	{ description: 'Try to be succeded', completed: false },
+			 	{ description: 'Don\'t follow leaders ' , completed: true },
+			 	{ description: 'Watch the parking meters', completed: false },
+			 	{ description: 'Look out', completed: false },
+			 	{ description: 'Stay away!', completed: true },
+			 	{ description: 'Get sick', completed: true },
+			 	{ description: 'Get jail', completed: false }
+			 ]
+		};
+	}
+
+	})
+
+	Vue.component('task',{
+		template: '<li><slot></slot></li>'
+	});
+```
