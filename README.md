@@ -1,5 +1,7 @@
 # laracasts_Learn_Vue_2
 
+[Ajuda em instanciar vue e vue component](https://uploads.disquscdn.com/images/d3f0fa038c672bade62f30026fee8e83c41aa447ec2290127fbb63447198cadc.png)
+
 ## Basic Databinding
 
 Após incluir o script do VUE em seu codigo, pode se utilizar o data-binding.
@@ -192,6 +194,8 @@ Assim ele pode ser utilizado como nesse exemplo
 Para criar componentes, deve ser definir um Vue.component()
 
 Em que no atributo template define o html do componente quando ele for instanciado.
+Assim no Html da pagina utlizamos a tag com o nome do componente criado.
+Em Slot passamos o conteudo interno da Tag declarada no HTML
 
 ```js
 	Vue.component('task',{
@@ -246,3 +250,166 @@ Ex:
 		template: '<li><slot></slot></li>'
 	});
 ```
+## Practical Component Exercise #1: Message
+
+Para passar parametros para o componete, basta passar como atributos do elemento HTML.
+
+```html
+<message title="Hello Wold" body="Lorem ipsum dolor sit amet" > </message>
+<message title="Hello Wold111" body="sadsadadasdsadsadasd" > </message>
+``` 
+
+Sendo que na declaracao do compoente Vue, eles devem ser explicitamente declarados como props
+
+```js
+Vue.component('message', {
+   	props: ['title', 'body'],
+   	template: `
+		<article class="message" v-show="isVisible">
+		  <div class="message-header">
+		    <p>{{title}}</p>
+		    <button class="delete" @click='hideModal'></button>
+		  </div>
+		  <div class="message-body">
+		    {{body}}
+		  </div>
+		</article>
+   	`,
+
+   	methods: {
+   		hideModal(){
+   			this.isVisible = false;
+   		}
+   	},
+   	data() {
+   		return{
+   			isVisible : true
+   		};
+   	}
+}); 
+```
+
+## Practical Component Exercise #2: Modal
+
+Quando se instancia normalmente um objeto da classe do Vue, esta se trata da uma instancia do root, em que ele pode enxergar apenas o escopo criado por ele.
+Sendo assim, uma instancia de um evento, no pode enxergar nem modificar nada no model dessa instancia. 
+
+Para auxiliar, um evento pode emitir eventos, que podemos utilizar fora e alterar alguma propriedade do vue model da instancia do root. Ex: $emit('close') - chamaria um evento 'close'.
+
+Componente cridado com:
+
+```js
+	Vue.component('modal',{
+		template: `
+			<div class="modal is-active">
+			  <div class="modal-background"></div>
+			  <div class="modal-content">
+			  <div class="box">
+			  <slot> </slot>
+			  </div>
+			  </div>
+			  <button class="modal-close" @click="$emit('close')"></button>
+			</div>
+	});
+```
+
+Chamada no Html do componente, sendo isActive uma propriedade do vue-model e @close o event-listener no evento close criado no componente:
+
+```html
+	<modal v-show="isActive" @close="isActive = false"> texto do modal </modal>
+```
+
+## Practical Component Exercise #3: Tabs
+
+Dentro do um compónente é possivel exergar os objetos referentes aos componentes filhos usando this.$children, em que é possivel retornar atributos do model do componente por exemplo. Assim, podemos montar um atribuito no model que se refere ao componente criado como filho
+
+Ex:
+
+```js
+created() {
+	this.tabs = this.$children;
+},
+```
+
+É possivel adicionar propriedades nas prorpiedades de um componente criado.
+
+```js
+	props: {
+		name: { required: true}
+		selected: {default: false}
+	},
+```
+
+É possivel passar um argumento na chamada de um metodo no HTML. Caso estivermos chamando um metodo atraves de um evento, podemos passas o proprio objeto evento como em: @click="selectTab($evento)" ou entao passar algo do escopo como no v-for
+
+```html
+<li v-for="tab in tabs" :class="{ 'is_active' : }">
+	<a href="#" @click="selectTab(tab)">{{tab.name}} </a>
+ </li>
+```
+
+Nunca se deve alterar atributos passados em 'props', caso seja necessário, deve se utilizar outra variavel a ser criada na model em data como no exemplo:
+
+```js
+Vue.component('tab',{
+	props: {
+		name: { required: true}
+		selected: {default: false}
+	},
+	template:`
+		<div> <slot></slot> </div>
+	` ,
+	data(){
+		return {
+			isActive: false
+		}
+	},
+	mounted () {
+		this.isActive = this.selected;
+	}
+});
+```
+
+## Component Communication Example #1: Custom Events
+
+Comunicao entre pai e filho se tratando de componente, pode ser feito atraves do $emit() ou this.$emit caso seja chamado em um método, em que passamos um evnto a ser disparado em quem fez a delaracao do componente
+
+```js
+Vue.component('cupon',{
+	template:`
+		<input placeholder="Enter your cupon" @blur=apllyCupon> </input>
+	` ,
+	methods :{
+		apllyCupon() {
+			this.$emit('applied');
+		}
+	}
+})
+```
+
+
+## Component Communication Example #2: Event Dispatcher
+
+Um forma de compartilhar a comunicacao entre os componentes, é criar um objeto do Vue global como em:
+
+```js
+window.Event = new Vue();
+```
+
+Em que todos os componentes terão acesso, e poderão chamar disparar e escutar eventos nesse objeto:
+
+Disprando um evento no objeto global
+```js
+Event.$emit('teste',{conteudo: 'teste111'})
+```
+
+Ao instanciar um evento, podemos ficar escutando por um evento no objeto global:
+
+```js
+created(){
+	Event.$on('teste', (cont) => alert(cont.conteudo) );
+}
+```
+
+
+
