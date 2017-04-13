@@ -403,7 +403,7 @@ Disprando um evento no objeto global
 Event.$emit('teste',{conteudo: 'teste111'})
 ```
 
-Ao instanciar um evento, podemos ficar escutando por um evento no objeto global:
+Ao instanciar uma classe do VUE, podemos ficar escutando por um evento no objeto global:
 
 ```js
 created(){
@@ -411,5 +411,46 @@ created(){
 }
 ```
 
+## Named Slots in a Nutshell
 
+Os slots que passamos para um componente podem ser nomeados afim de diferenciarmos e usarmos em vários trechos.
 
+Para isto no template do componente utilizamos o atributo name da tag slot 
+
+```html
+<slot name="nome"> Conteudo padrao </slot>
+```
+Em que pode se opcionalmente utilizar um conteudo padrao 
+
+Para passar o conteudo no html usa-se:
+```html
+ <template slot="header"> texto do header </template>
+```
+
+No lugar da tag template pode se passar outro elemente como div, p, h1. Assim será rederizado o compomente com a tag que se passar
+
+## Single-Use Components and Inline Templates
+
+Não é uma pratica comum, mas pode se usar componentes em que todo seu conteudo é passado na declaracao no html. Isto é não criar um template para ele:
+
+```html
+<progess-view inline-template> 
+<div>
+	taxa de completo: {{completo}}
+	<p><button @click="completo = completo + 10">Aumentar</button></p>	
+</div>
+ </progess-view>
+```
+
+Nesse caso deve se passar 'inline-template' na chamada do componente.
+
+```js
+	Vue.component('progess-view',{
+		data() {
+			return {
+				completo: 50
+			};
+		}	
+	})	
+```
+Nota se que o componente nao possui o atributo 'template'.
